@@ -21,7 +21,7 @@ ar_chars_dict = {
 }
 
 def normalize_and_replace_chars(text: str):
-    """ Normalize Unicode characters and replace Arabic characters with corresponding English ones. """
+    """Normalize Unicode characters and replace Arabic characters with corresponding English ones."""
     normalized_text = unicodedata.normalize('NFKD', text)
     line = ""
     abnormal_chars = []
@@ -37,18 +37,32 @@ def normalize_and_replace_chars(text: str):
         logging.warning(f"Abnormal chars: {', '.join(x.encode('unicode_escape').decode('utf8') for x in abnormal_chars)}")
     return line
 
+def process_file(file_path):
+    """Process each line in the given file."""
+    try:
+        with open(file_path, 'r', encoding='utf-8') as file:
+            for line in file:
+                print(normalize_and_replace_chars(line.rstrip('\n')))
+    except Exception as e:
+        logging.error(f"Error reading file {file_path}: {e}")
+        sys.exit(1)
+
 def main(arguments):
-    """ Main function to handle command-line arguments and text processing. """
+    """Main function to handle command-line arguments and text processing."""
     parser = argparse.ArgumentParser(
-        description="Convert Arabic characters in text to corresponding English characters based on QWERTY keyboard layout.",
-        formatter_class=argparse.RawDescriptionHelpFormatter)
-    parser.add_argument("text", help="Input Arabic text to be converted", nargs="+")
-    
+        description="Convert Arabic characters to corresponding English characters based on QWERTY keyboard layout."
+    )
+    group = parser.add_mutually_exclusive_group(required=True)
+    group.add_argument("-f", "--file", help="Input file path with Arabic text to be converted", type=str)
+    group.add_argument("-t", "--text", help="Input Arabic text to be converted", nargs='*')
+
     args = parser.parse_args(arguments)
 
-    # Join the list of arguments into a single string, assuming that the input might contain spaces
-    input_text = ' '.join(args.text)
-    print(normalize_and_replace_chars(input_text))
+    if args.file:
+        process_file(args.file)
+    elif args.text:
+        input_text = ' '.join(args.text)
+        print(normalize_and_replace_chars(input_text))
 
 if __name__ == '__main__':
     sys.exit(main(sys.argv[1:]))
