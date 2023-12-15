@@ -20,6 +20,7 @@ ar_chars_dict = {
     u'أ': 'H', u'إ': 'Y', u'آ': 'N',
 }
 
+
 def normalize_and_replace_chars(text: str):
     """Normalize Unicode characters and replace Arabic characters with corresponding English ones."""
     normalized_text = unicodedata.normalize('NFKD', text)
@@ -34,8 +35,10 @@ def normalize_and_replace_chars(text: str):
         if cch not in ar_chars_dict and cch not in abnormal_chars:
             abnormal_chars.append(cch)
     if abnormal_chars:
-        logging.warning(f"Abnormal chars: {', '.join(x.encode('unicode_escape').decode('utf8') for x in abnormal_chars)}")
+        logging.warning(
+            f"Abnormal chars: {', '.join(x.encode('unicode_escape').decode('utf8') for x in abnormal_chars)}")
     return line
+
 
 def process_file(file_path):
     """Process each line in the given file."""
@@ -46,6 +49,7 @@ def process_file(file_path):
     except Exception as e:
         logging.error(f"Error reading file {file_path}: {e}")
         sys.exit(1)
+
 
 def main(arguments):
     """Main function to handle command-line arguments and text processing."""
@@ -63,6 +67,7 @@ def main(arguments):
     elif args.text:
         input_text = ' '.join(args.text)
         print(normalize_and_replace_chars(input_text))
+
 
 if __name__ == '__main__':
     sys.exit(main(sys.argv[1:]))
